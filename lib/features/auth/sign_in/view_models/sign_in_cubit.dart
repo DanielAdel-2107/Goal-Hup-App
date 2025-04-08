@@ -53,6 +53,7 @@ class SignInCubit extends Cubit<SignInState> {
           if (data != null) {
             player = PlayerModel.fromJson(data);
             await getIt<CacheHelper>().saveUserModel(player!);
+            await getIt<CacheHelper>().saveData(key: "isPlayer", value: true);
             route = RouteNames.showRequestScreen;
           } else {
             route = RouteNames.completeProfileScreen;
@@ -60,6 +61,8 @@ class SignInCubit extends Cubit<SignInState> {
           break;
         case "Recruitment manager":
           route = RouteNames.homeScreen;
+          await getIt<CacheHelper>().saveData(key: "isPlayer", value: false);
+
           break;
       }
     } on Exception catch (e) {

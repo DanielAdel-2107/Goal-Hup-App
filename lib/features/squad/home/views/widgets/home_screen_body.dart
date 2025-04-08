@@ -16,7 +16,7 @@ import 'package:goal_hup/features/squad/player_in_chating/views/screens/player_i
 
 class HomeScreenBody extends StatelessWidget {
   const HomeScreenBody({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return BlocProvider(

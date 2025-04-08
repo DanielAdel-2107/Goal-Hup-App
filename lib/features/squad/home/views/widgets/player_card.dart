@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:goal_hup/core/app_route/route_names.dart';
+import 'package:goal_hup/core/cache/cache_helper.dart';
 import 'package:goal_hup/core/components/custom_gradiant_elevated_button.dart';
+import 'package:goal_hup/core/di/dependancy_injection.dart';
 import 'package:goal_hup/core/utilies/colors/app_colors.dart';
 import 'package:goal_hup/core/utilies/extensions/app_extensions.dart';
 import 'package:goal_hup/core/utilies/styles/app_text_styles.dart';
@@ -82,7 +84,9 @@ class PlayerCard extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CustomGradiantElevatedButton(
+                        getIt<CacheHelper>().getData(key: "isPlayer") == true
+                            ? SizedBox()
+                            : CustomGradiantElevatedButton(
                                 hPadding: context.screenWidth * 0.01,
                                 wPadding: context.screenHeight * 0.02,
                                 name: "Message",

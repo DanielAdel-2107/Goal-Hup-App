@@ -101,15 +101,15 @@ class PlayerInChatingScreen extends StatelessWidget {
 
 class CustomLoading extends StatelessWidget {
   const CustomLoading({
-    super.key,
+    super.key, this.width,
   });
-
+  final double ? width;
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Lottie.asset(
         AppLotties.loadingLottie,
-        width: context.screenWidth * 0.5,
+        width:width?? context.screenWidth * 0.5,
       ),
     );
   }

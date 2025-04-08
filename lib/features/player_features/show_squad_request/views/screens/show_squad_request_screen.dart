@@ -38,6 +38,14 @@ class ShowSquadRequestScreen extends StatelessWidget {
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
+              leading: CustomIconButton(
+                icon: Icons.person,
+                color: AppColors.kPrimaryColor,
+                onPressed: () {
+                  context.pushScreen(RouteNames.playerProfileScreen,
+                      arguments: getIt<CacheHelper>().getUserModel()!.toJson());
+                },
+              ),
               title: Text(
                 "Squad Request",
                 style: AppTextStyles.title24PrimaryColorW500,
@@ -63,10 +71,14 @@ class ShowSquadRequestScreen extends StatelessWidget {
             floatingActionButton: FloatingActionButton(
               backgroundColor: AppColors.kPrimaryColor,
               onPressed: () {
-                context.pushScreen(RouteNames.playerProfileScreen,
-                    arguments: getIt<CacheHelper>().getUserModel()!.toJson());
+                context.pushScreen(
+                  RouteNames.homeScreen,
+                );
               },
-              child: Icon(Icons.person,color: Colors.white,),
+              child: Icon(
+                Icons.sports_soccer_rounded,
+                color: Colors.white,
+              ),
             ),
           );
         },

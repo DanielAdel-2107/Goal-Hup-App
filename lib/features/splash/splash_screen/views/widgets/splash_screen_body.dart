@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:goal_hup/core/utilies/assets/images/app_images.dart';
-import 'package:goal_hup/core/utilies/assets/lotties/app_lotties.dart';
 import 'package:goal_hup/core/utilies/extensions/app_extensions.dart';
 import 'package:goal_hup/features/squad/player_in_chating/views/screens/player_in_chating_screen.dart';
-import 'package:lottie/lottie.dart';
 
 class SplashScreenBody extends StatelessWidget {
   const SplashScreenBody({super.key});
@@ -52,7 +50,9 @@ class SplashScreenBody extends StatelessWidget {
               ],
             ),
           ),
-          CustomLoading()
+          CustomLoading(
+            width: context.screenWidth *0.3,
+          )
         ],
       ),
     );
