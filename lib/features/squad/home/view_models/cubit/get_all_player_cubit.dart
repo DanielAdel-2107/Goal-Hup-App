@@ -33,15 +33,15 @@ class GetAllPlayerCubit extends Cubit<GetAllPlayerState> {
     log(selectedTabIndex.toString());
   }
 
-  //! get players
   StreamSubscription? _streamSubscription;
   List<PlayerModel> players = [];
 
-  getAllPlayers() async {
+  getAllPlayers() {
     _streamSubscription = streamData(
       tableName: "players",
     ).listen(
       (event) {
+        if (isClosed) return;
         if (event.isNotEmpty) {
           players = event.map((data) => PlayerModel.fromJson(data)).toList();
           getTopRatedPlayer();
@@ -67,7 +67,6 @@ class GetAllPlayerCubit extends Cubit<GetAllPlayerState> {
     );
   }
 
-  //! get top rated
   List<PlayerModel> topRatedPlayer = [];
   getTopRatedPlayer() {
     topRatedPlayer = List.from(players);
@@ -77,7 +76,6 @@ class GetAllPlayerCubit extends Cubit<GetAllPlayerState> {
     );
   }
 
-  //! get position-based players
   List<PlayerModel> playerByPosition = [];
   getPositionPlayer() {
     playerByPosition = List.from(players);
@@ -90,7 +88,6 @@ class GetAllPlayerCubit extends Cubit<GetAllPlayerState> {
     );
   }
 
-  //! search
   List<PlayerModel>? searchPlayers;
   searchForPlayerOrClub({required String value}) {
     List<PlayerModel> sourceList = [];
@@ -108,7 +105,6 @@ class GetAllPlayerCubit extends Cubit<GetAllPlayerState> {
     safeEmit(SearchChanged());
   }
 
-  //! open chat
   openChat({
     required String playerId,
     required BuildContext context,
@@ -122,6 +118,9 @@ class GetAllPlayerCubit extends Cubit<GetAllPlayerState> {
         .select()
         .eq("id", currentUser.id)
         .single();
+
+    if (isClosed) return;
+
     await addData(
       tableName: "chats",
       data: {
@@ -133,27 +132,29 @@ class GetAllPlayerCubit extends Cubit<GetAllPlayerState> {
         "squad_name": response["name"],
       },
     );
-    context.pushScreen(RouteNames.chatScreen,
-        arguments: playerId + currentUser.id);
+
+    if (!isClosed) {
+      context.pushScreen(RouteNames.chatScreen,
+          arguments: playerId + currentUser.id);
+    }
   }
 
-  //! sign out
   signOut() async {
     try {
       safeEmit(SignOutLoading());
       await getIt<SupabaseClient>().auth.signOut();
-      safeEmit(SignOutSuccess());
+      if (!isClosed) safeEmit(SignOutSuccess());
     } on Exception catch (e) {
-      safeEmit(SignOutFailure(errorMessage: e.toString()));
+      if (!isClosed) {
+        safeEmit(SignOutFailure(errorMessage: e.toString()));
+      }
     }
   }
 
-  //! helper to emit safely
   void safeEmit(GetAllPlayerState state) {
     if (!isClosed) emit(state);
   }
 
-  //! cancel stream on dispose
   @override
   Future<void> close() {
     _streamSubscription?.cancel();

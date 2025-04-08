@@ -62,7 +62,6 @@ class SignInCubit extends Cubit<SignInState> {
         case "Recruitment manager":
           route = RouteNames.homeScreen;
           await getIt<CacheHelper>().saveData(key: "isPlayer", value: false);
-
           break;
       }
     } on Exception catch (e) {

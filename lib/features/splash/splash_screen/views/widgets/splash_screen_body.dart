@@ -51,7 +51,7 @@ class SplashScreenBody extends StatelessWidget {
             ),
           ),
           CustomLoading(
-            width: context.screenWidth *0.3,
+            width: context.screenWidth *0.4,
           )
         ],
       ),

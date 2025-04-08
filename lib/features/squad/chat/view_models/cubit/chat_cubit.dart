@@ -26,6 +26,7 @@ class ChatCubit extends Cubit<ChatState> {
       primaryKey: 'id',
     ).listen(
       (data) {
+        if (isClosed) return;
         if (data.isNotEmpty) {
           final dynamic messagesData = data.first['messages'];
           final List<dynamic> messagesJson =
@@ -39,6 +40,7 @@ class ChatCubit extends Cubit<ChatState> {
         }
       },
       onError: (e) {
+        if (isClosed) return;
         log("Stream error: $e");
         safeEmit(ChatFailed(error: e.toString()));
       },
@@ -53,6 +55,8 @@ class ChatCubit extends Cubit<ChatState> {
             .select("messages")
             .eq("id", id)
             .single();
+
+        if (isClosed) return;
 
         final dynamic messagesData = chatData['messages'];
         final List<dynamic> messagesJson =
@@ -71,15 +75,16 @@ class ChatCubit extends Cubit<ChatState> {
           "messages": messages.map((m) => m.toJson()).toList(),
         }).eq("id", id);
 
-        messageController.clear();
-        safeEmit(ChatLoaded(messages: messages));
+        if (!isClosed) {
+          messageController.clear();
+          safeEmit(ChatLoaded(messages: messages));
+        }
       } catch (e) {
-        safeEmit(ChatFailed(error: e.toString()));
+        if (!isClosed) safeEmit(ChatFailed(error: e.toString()));
       }
     }
   }
 
-  // Safe emit helper
   void safeEmit(ChatState state) {
     if (!isClosed) emit(state);
   }
