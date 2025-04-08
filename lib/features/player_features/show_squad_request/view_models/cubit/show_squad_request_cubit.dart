@@ -10,16 +10,19 @@ class ShowSquadRequestCubit extends Cubit<ShowSquadRequestState> {
   ShowSquadRequestCubit() : super(ShowSquadRequestLoading()) {
     _loadShowSquadRequest();
   }
+
   StreamSubscription? _streamSubscription;
   List<ChatingPlayerModel> chatingPlayer = [];
-  _loadShowSquadRequest() {
+
+  void _loadShowSquadRequest() {
     _streamSubscription?.cancel();
     _streamSubscription = streamDataWithSpecificId(
-            tableName: "chats",
-            id: getIt<SupabaseClient>().auth.currentUser!.id,
-            primaryKey: 'player_id')
-        .listen(
+      tableName: "chats",
+      id: getIt<SupabaseClient>().auth.currentUser!.id,
+      primaryKey: 'player_id',
+    ).listen(
       (player) {
+        if (isClosed) return; 
         if (player.isNotEmpty) {
           chatingPlayer =
               player.map((e) => ChatingPlayerModel.fromJson(e)).toList();
@@ -29,6 +32,7 @@ class ShowSquadRequestCubit extends Cubit<ShowSquadRequestState> {
         }
       },
       onError: (error) async {
+        if (isClosed) return;
         emit(ShowSquadRequestLoading());
         await Future.delayed(Duration(seconds: 2));
         _loadShowSquadRequest();
@@ -37,15 +41,19 @@ class ShowSquadRequestCubit extends Cubit<ShowSquadRequestState> {
   }
 
   //! logout
-  signOut() async {
+  Future<void> signOut() async {
     try {
       emit(SignOutLoading());
       await getIt<SupabaseClient>().auth.signOut();
       emit(SignOutSuccess());
-    } on Exception catch (e) {
-      emit(
-        SignOutFailure(errorMessage: e.toString()),
-      );
+    } catch (e) {
+      emit(SignOutFailure(errorMessage: e.toString()));
     }
+  }
+
+  @override
+  Future<void> close() {
+    _streamSubscription?.cancel();
+    return super.close();
   }
 }
